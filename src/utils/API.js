@@ -116,7 +116,7 @@ export default {
     
     first = first !== '' ? `${first[0].toUpperCase()}${first.substring(1)}` : '';
     last = last !== '' ?  `${last[0].toUpperCase()}${last.substring(1)}` : '';
-    console.log(`first ${first} last ${last}`)
+    // console.log(`first ${first} last ${last}`)
     
     if (first !== '' && last !== '') {
       let params = {
@@ -137,7 +137,7 @@ export default {
 
           // console.log('my data', data);
           // console.log(JSON.stringify(data.Item))
-          console.log(sendData.Item, 'full name last name combo');
+          // console.log(sendData.Item, 'full name last name combo');
       return sendData.Item !== undefined ? [sendData.Item] : [];
 
     } else if (last !== '') {
@@ -152,7 +152,7 @@ export default {
       let sendData = await docClient.scan(params
         // , onScan
         ).promise();
-      console.log('scan method:', sendData.Items);
+      // console.log('scan method:', sendData.Items);
       return sendData.Items;
 
     } else if (first !== '') {
