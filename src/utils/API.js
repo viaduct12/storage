@@ -19,7 +19,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 
 export default {
   loadData: function() {
-    return axios.get('https://s3-us-west-2.amazonaws.com/css490/input3.txt');
+    return axios.get('https://s3-us-west-2.amazonaws.com/css490/input.txt');
   },
 
   // s3Upload: function() {

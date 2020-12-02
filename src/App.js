@@ -1,12 +1,11 @@
 //import logo from './logo.svg';
 import './App.css';
-import Button from './components/Button'
-import SignUp from './page/SignUp';
+import Search from './page/Search';
 
 function App() {
   return (
     <>
-      <SignUp/>
+      <Search/>
     </>
   );
 }
