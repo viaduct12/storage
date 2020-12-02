@@ -1,0 +1,52 @@
+
+body {
+    background: black;
+}
+
+#containerLogin {
+    text-align: center;
+    z-index: 10;
+    /* margin-left: 40%; */
+    /* margin-right: 50%; */
+    top: 10%;
+}
+
+.load{
+    font-size: 300%    
+}
+
+.astext, .load {
+    background:none;
+    border:none;
+    margin:0;
+    padding:0;
+    cursor: pointer;
+    color: white;
+    font-family: monospace;
+    font-weight: 30px;
+}
+
+h1, p {
+    color: white;
+    font-family: monospace;
+}
+
+#input, input, textarea {
+    height: 30%;
+    width: 50%;
+    border-radius: 25px;
+    color: lightseagreen;
+}
+
+.tableContainer {
+    /* border: 1px solid #eeccee; */
+    max-height: 400px;
+    overflow-y: scroll;
+    width: 100%;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.tableContainer::-webkit-scrollbar {
+    display: none;
+}

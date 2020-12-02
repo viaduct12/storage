@@ -1,0 +1,10 @@
+.query {
+    background:none;
+    border:none;
+    margin:0;
+    cursor: pointer;
+    color: white;
+    font-family: monospace;
+    padding-right: 11%;
+    padding-left: 14%;
+}
