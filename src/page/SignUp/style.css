@@ -43,10 +43,11 @@ h1, p {
     max-height: 400px;
     overflow-y: scroll;
     width: 100%;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    /* -ms-overflow-style: none;
+    scrollbar-width: none; */
 }
 
 .tableContainer::-webkit-scrollbar {
-    display: none;
+    overflow-y: hidden;
+    overflow-x: visible;
 }
