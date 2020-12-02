@@ -6,9 +6,9 @@ AWS.config.update({
   accessKeyId: process.env.REACT_APP_AccessKeyId,
   secretAccessKey: process.env.REACT_APP_SecretAccessKey,
   region: process.env.REACT_APP_Region,
-  credentials: new AWS.CognitoIdentityCredentials({
-    IdentityPoolId: process.env.REACT_APP_IdentityPoolId,
-  })
+  // credentials: new AWS.CognitoIdentityCredentials({
+  //   IdentityPoolId: process.env.REACT_APP_IdentityPoolId,
+  // })
 })
 
 // const s3 = new AWS.S3({
