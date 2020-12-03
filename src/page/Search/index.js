@@ -96,13 +96,6 @@ class SignUp extends React.Component {
     preparePayload = async datas => {
         API.checkFiles();
         //good code
-        // let beforeData = await API.getAllData();
-        // let nameBefore = [];
-        // for (let i = 0; i < beforeData.length - 1; i++) {
-        //     nameBefore.push(beforeData[i].fullName);
-        // }
-        // this.setState({ prevData: beforeData });
-        // let fullNameArr = [];
         datas.map(data => {
 
             let payload = {
@@ -133,13 +126,8 @@ class SignUp extends React.Component {
                     }
                 }
                 API.putData(payload)
-                // return payload;
             }
-            // return payload;
         })
-        // update = update[update.length - 1] === undefined ? update.pop : update;
-        // console.log(update[update.length - 1]);
-        // this.setState({ data: update });
     }
     render() {
         return (

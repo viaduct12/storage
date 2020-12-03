@@ -139,7 +139,7 @@ export default {
     let inputData = await s3.listObjects(inputBucket).promise();
 
     myContentSize = myData.Contents[0] !== undefined ? myData.Contents.map(content => content.Size) : [];
-    inputContentSize = inputData.Contents[0] !== undefined ? inputData.Contents.map(content => content.Key === 'input1.txt' ? content.Size : 0) : [];
+    inputContentSize = inputData.Contents[0] !== undefined ? inputData.Contents.map(content => content.Key === 'input.txt' ? content.Size : 0) : [];
 
     inputContentSize = inputContentSize.filter(size => size > 0);
     console.log(myContentSize, 'my content size', inputContentSize, 'input content size');
