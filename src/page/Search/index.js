@@ -9,12 +9,13 @@ class SignUp extends React.Component {
     state = {
         firstName: "",
         lastName: "",
-        data: "",
+        data: [],
         headers: ['fullName', 'firstName', 'lastName'],
         tableData: [],
         notFound: 'false',
         text: '',
-        dataLoaded: 'false'
+        dataLoaded: 'false',
+        prevData: []
     };
 
     handleChange = (event) => {
@@ -30,53 +31,32 @@ class SignUp extends React.Component {
             'lastName': '',
             'firstName': ''
         });
-        // alert('here is value ' + this.state.value);
-        // console.log(this.state, "my state");
-        // event.target[0].value = "";
-        // event.target[1].value = "";
 
         if (this.state.dataLoaded === 'true') {
-
             if (this.state.firstName === '' && this.state.lastName === '') {
-                this.setState({ 
-                    'notFound': 'true', 
-                    'text': 'Please enter first name, last name, or both!' 
+                this.setState({
+                    'notFound': 'true',
+                    'text': 'Please enter first name, last name, or both!'
                 });
             } else {
-
+            
                 let apiData = await API.getData(this.state.firstName, this.state.lastName);
-                
                 if (apiData.length !== 0) {
-                    // console.log('hello');
                     this.setState({
                         'headers': ['fullName', 'firstName', 'lastName']
                     })
-                    apiData.map(allData => {
-                        // console.log();
-                        let objectKeyArr = Object.keys(allData);
-                        objectKeyArr.map(keys => {
 
-                            let boolArr = this.state.headers.includes(keys);
-    
-                            if (!boolArr) {
-                                // console.log(keys);
-                                this.state.headers.push(keys);
-                            }
-                        })
-                    })
+                apiData.map(allData =>
+                    Object.keys(allData).map(keys => (!this.state.headers.includes(keys)) ? this.state.headers.push(keys) : '')
+                )
                 }
-                // console.log(apiData.length, 'response from api');
-                // this.setState({ 'tableData': apiAllData })
-
-                apiData.length === 0 ? this.setState({ 
-                    'notFound': 'true', 
-                    'text': 'Could not be found, Try again!' 
-                }) : this.setState({ 
+                apiData.length === 0 ? this.setState({
+                    'notFound': 'true',
+                    'text': 'Could not be found, Try again!'
+                }) : this.setState({
                     'notFound': 'false',
                     'tableData': apiData
                 });
-                // apiData = JSON.stringify(apiData.Items);
-                // console.log(`apiData: ${apiData.length}`);
             }
         } else {
             this.setState({
@@ -85,48 +65,46 @@ class SignUp extends React.Component {
         }
     }
 
-    handleClick = async (event) => {
+    handleClick = (event) => {
         this.setState({ 'notFound': 'false' });
-        // console.log("click happened", event.target.value);
-        // console.log('testing s3 capabilities');
-        // if (event.target.value === 'Load') API.dlFile();
         const { value } = event.target;
-        value === 'Load' ? API.loadData().then(res => {
-            this.preparePayload(res.data.split('\r\n'))
+        value === 'Load' ? API.loadData().then(async res => {
+            await this.preparePayload(res.data.split('\r\n'))
             this.setState({
-                'data': res.data.split("\r\n"),
                 'dataLoaded': 'true',
                 'firstName': '',
                 'lastName': ''
             })
-        }) : API.clearData();
-        let apiAllData = await API.getAllData();
-        // console.log('all data', apiAllData);
-        apiAllData.map(allData => {
-            // console.log();
-            let objectKeyArr = Object.keys(allData);
-            objectKeyArr.map(keys => {
-                let boolArr = this.state.headers.includes(keys);
+            // this.state.data.map(update => API.putData(update));
+            let apiAllData = await API.getAllData();
 
-                if (!boolArr) {
-                    // console.log(keys);
-                    this.state.headers.push(keys);
-                }
-            })
-        })
-        this.setState({ 'tableData': apiAllData })
+            apiAllData.map(allData =>
+                Object.keys(allData).map(keys => (!this.state.headers.includes(keys)) ? this.state.headers.push(keys) : '')
+            )
+            this.setState({ 'tableData': apiAllData })
+        }) : API.clearData();
 
 
         if (value === 'Clear')
             this.setState({
                 'tableData': [],
-                'dataLoaded': 'false'
+                'dataLoaded': 'false',
+                'prevData': []
             })
     }
 
-    preparePayload = datas => {
-        // console.log(datas);
-        let update = datas.map(data => {
+    preparePayload = async datas => {
+        API.checkFiles();
+        //good code
+        // let beforeData = await API.getAllData();
+        // let nameBefore = [];
+        // for (let i = 0; i < beforeData.length - 1; i++) {
+        //     nameBefore.push(beforeData[i].fullName);
+        // }
+        // this.setState({ prevData: beforeData });
+        // let fullNameArr = [];
+        datas.map(data => {
+
             let payload = {
                 fullName: "",
                 firstName: "",
@@ -136,11 +114,10 @@ class SignUp extends React.Component {
             if (data !== "") {
                 data = data.replace(/\t/g, ' ').trim();
                 let newArr = data.split(' ');
-                
                 let firstName = newArr.shift();
                 let lastName = newArr[0] !== "" ? newArr.shift() : newArr.shift()
+
                 lastName = lastName === '' ? newArr.shift() : lastName
-                // console.log(newArr, 'shifted')
                 payload.fullName = `${firstName} ${lastName}`
                 payload.firstName = firstName
                 payload.lastName = lastName
@@ -148,26 +125,21 @@ class SignUp extends React.Component {
                 for (let i = 0; i < newArr.length; i++) {
                     if (newArr[i] !== "") {
                         let tempArr = newArr[i].split('=');
-                        // console.log(tempArr[0], tempArr[1])
                         payload[tempArr[0]] = tempArr[1];
-                        // console.log(this.state.headers.includes(tempArr[0]))
                         let boolArr = this.state.headers.includes(tempArr[0]);
-
                         if (!boolArr) {
                             this.state.headers.push(tempArr[0]);
                         }
                     }
                 }
-                API.putData(payload);
-                // console.log(payload, 'the payload')
-                return payload;
+                API.putData(payload)
+                // return payload;
             }
-            return payload;
+            // return payload;
         })
-        update = update[update.length - 1] === undefined ? update.pop : update;
-        // console.log(update[update.length -1], 'last index');
-        // update.pop();
-        // this.setState({ 'tableData': update })
+        // update = update[update.length - 1] === undefined ? update.pop : update;
+        // console.log(update[update.length - 1]);
+        // this.setState({ data: update });
     }
     render() {
         return (
@@ -192,7 +164,7 @@ class SignUp extends React.Component {
 
                     <div className='row astext'>
                         {
-                            this.state.tableData.length === 0 ? <div className='load'>Load data first...</div> : <div className='tableContainer'><Table  headers={this.state.headers} tabData={this.state.tableData} /></div>
+                            this.state.tableData.length === 0 ? <div className='load'>Load data first...</div> : <div className='tableContainer'><Table headers={this.state.headers} tabData={this.state.tableData} /></div>
                         }
                     </div>
                 </div>

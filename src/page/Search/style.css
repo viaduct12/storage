@@ -1,6 +1,6 @@
 
 body {
-    background: black;
+    background: #181515;
 }
 
 #containerLogin {
@@ -40,6 +40,7 @@ h1, p {
 
 .tableContainer {
     /* border: 1px solid #eeccee; */
+    background-color: rgb(46, 46, 46);
     max-height: 400px;
     overflow-y: scroll;
     width: 100%;
@@ -48,6 +49,7 @@ h1, p {
 }
 
 .tableContainer::-webkit-scrollbar {
+    background-color: black;
     overflow-y: hidden;
     overflow-x: visible;
 }

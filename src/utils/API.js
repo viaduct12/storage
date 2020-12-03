@@ -6,62 +6,21 @@ AWS.config.update({
   accessKeyId: process.env.REACT_APP_AccessKeyId,
   secretAccessKey: process.env.REACT_APP_SecretAccessKey,
   region: process.env.REACT_APP_Region,
-  // credentials: new AWS.CognitoIdentityCredentials({
-  //   IdentityPoolId: process.env.REACT_APP_IdentityPoolId,
-  // })
 })
 
-// const s3 = new AWS.S3({
-//   apiVersion: '2006-03-01'
-// });
+
+const s3 = new AWS.S3({
+  apiVersion: '2006-03-01'
+});
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 
 export default {
-  loadData: function() {
+  loadData: function () {
     return axios.get('https://s3-us-west-2.amazonaws.com/css490/input.txt');
   },
 
-  // s3Upload: function() {
-  //   let bucketParams = {
-  //     Bucket: 'css436prog4'
-  //   }
-  //   s3.listObjects(bucketParams, (err,data) => {
-  //     err ? console.log('Error: ', err) : console.log(`Sucess ${JSON.stringify(data)}`);
-  //     console.log(data.Contents);
-  //     let contentKeys = Object.keys(data.Contents[0]);
-  //     console.log(contentKeys, data.Contents[0][contentKeys[0]]);
-  //   })
-    
-    // axios.get('https://s3-us-west-2.amazonaws.com/css490/input.txt').then( res => {
-    //   let uploadParams = {
-    //     Bucket: 'css436prog4',
-    //     Key: '',
-    //     Body: ''
-    //   };
-    //   const fs = require('fs');
-    //   const path = require('path')
-    //   console.log(res);
-      // let fileStream = fs.createReadStream(res);
-      // fileStream.on('error', err => {
-      //   console.log('File error', err);
-      // })
-
-      // uploadParams.Body = fileStream;
-      // uploadParams.Key = path.basename(res);
-
-      // s3.upload(uploadParams, (err,data) => {
-      //   if (err) throw err;
-      //   console.log(data.Location);
-      // })
-
-    // })
-    // s3.listBuckets((err,data) => {
-    //   if(err) throw err;
-    //   console.log(data.Buckets);
-    // })
-  // },
-  clearData: function() {
+  clearData: function () {
     let params = {
       TableName: 'Program4'
     }
@@ -77,7 +36,7 @@ export default {
 
         data.Items.map(item => {
           // console.log(item);
-          const {lastName, firstName} = item;
+          const { lastName, firstName } = item;
           let params = {
             TableName: 'Program4',
             Key: {
@@ -89,11 +48,11 @@ export default {
           docClient.delete(params, (err, data) => {
             if (err)
               throw err;
-            
+
             console.log('Delete item succedded:', JSON.stringify(data, null, 2));
           })
         })
-        if (typeof data.LastEvaluatedKey != 'undefined') {
+        if (typeof data.LastEvaluatedKey !== 'undefined') {
           params.ExclusiveStartKey = data.LastEvaluatedKey;
           docClient.scan(params, onScan);
         }
@@ -101,24 +60,26 @@ export default {
     }
   },
 
-  putData: function(data) {
+  putData: function (data) {
     let params = {
       TableName: 'Program4',
       Item: data
     };
     // console.log(params, 'params payload')
-    docClient.put(params, (err,data) => {
-      err ? console.error('Unable to add') : console.log('Added item successfully');
+    docClient.put(params, (err, data) => {
+      err ? console.error('Unable to add') : console.log('Added item successfully', JSON.stringify(data, null, 2));
     })
   },
 
-  getData: async function(first, last) {
-    
+  getData: async function (first, last) {
+
     first = first !== '' ? `${first[0].toUpperCase()}${first.substring(1)}` : '';
-    last = last !== '' ?  `${last[0].toUpperCase()}${last.substring(1)}` : '';
+    last = last !== '' ? `${last[0].toUpperCase()}${last.substring(1)}` : '';
     // console.log(`first ${first} last ${last}`)
-    
+    first = first.length === 2 ? first.toUpperCase() : first;
+
     if (first !== '' && last !== '') {
+
       let params = {
         TableName: 'Program4',
         Key: {
@@ -126,18 +87,7 @@ export default {
           'lastName': last
         }
       }
-          let sendData = await docClient.get(params
-            // , (err, data) => {
-            // if(err)
-            //   throw err;
-            
-            // console.log('Item: ', JSON.stringify(data.Item, null, 2));
-          // }
-          ).promise();
-
-          // console.log('my data', data);
-          // console.log(JSON.stringify(data.Item))
-          // console.log(sendData.Item, 'full name last name combo');
+      let sendData = await docClient.get(params).promise();
       return sendData.Item !== undefined ? [sendData.Item] : [];
 
     } else if (last !== '') {
@@ -148,11 +98,8 @@ export default {
           ':l': last
         }
       }
-  
-      let sendData = await docClient.scan(params
-        // , onScan
-        ).promise();
-      // console.log('scan method:', sendData.Items);
+
+      let sendData = await docClient.scan(params).promise();
       return sendData.Items;
 
     } else if (first !== '') {
@@ -163,47 +110,67 @@ export default {
           ':f': first
         }
       }
-
-      let sendData = await docClient.scan(params
-        // , onScan
-        ).promise();
-
+      let sendData = await docClient.scan(params).promise();
       return sendData.Items;
     }
   },
-  getAllData: async function() {
+  getAllData: async function () {
     let params = {
       TableName: 'Program4',
     }
 
-    let sendData = await docClient.scan(params
-      // , onScan
-    ).promise();
-    // console.log('scan method:', sendData.Items);
-    
+    let sendData = await docClient.scan(params).promise();
     return sendData.Items;
   },
-  // dlFile: async function() {
-  //   let file = await s3.getObject({
-  //     Bucket: 'css490',
-  //     Key: 'input.txt'
-  //   }, (err,data) => {
-  //     if (err) throw err;
-  //     // return data.Body
-  //     console.log('file downloaded', data.Body)
-  //   })
 
-  //   let params ={
-  //     Bucket: 'css436prog4',
-  //     Key: 'input.txt',
-  //     Body: file
-  //   };
-  //   console.log('params payload');
-  //   let objectPromise = s3.putObject(params).promise();
+  checkFiles: async function () {
+    const myBucket = {
+      Bucket: 'css436prog4'
+    }
 
-  //   objectPromise.then(data =>{
-  //     console.log(data);
-  //   })
+    const inputBucket = {
+      Bucket: 'css490'
+    }
 
-  // }
+    let myContentSize = [];
+    let inputContentSize = [];
+
+    let myData = await s3.listObjects(myBucket).promise();
+    let inputData = await s3.listObjects(inputBucket).promise();
+
+    myContentSize = myData.Contents[0] !== undefined ? myData.Contents.map(content => content.Size) : [];
+    inputContentSize = inputData.Contents[0] !== undefined ? inputData.Contents.map(content => content.Key === 'input1.txt' ? content.Size : 0) : [];
+
+    inputContentSize = inputContentSize.filter(size => size > 0);
+    console.log(myContentSize, 'my content size', inputContentSize, 'input content size');
+
+    let boolSize = myContentSize.indexOf(inputContentSize[0]) === -1;
+    // true if -1
+    if (boolSize) {
+      console.log('file is being downloaded');
+      let file = await s3.getObject({
+        Bucket: 'css490',
+        Key: 'input.txt'
+      }, (err, data) => {
+        if (err) throw err;
+        // console.log('file downloaded', data.Body)
+        return data.Body
+      }).promise();
+
+      // console.log( file.Body, 'the file');
+
+      let params = {
+        Bucket: 'css436prog4',
+        Key: `input${myContentSize.length}.txt`,
+        Body: file.Body
+      };
+      // console.log('params payload', params);
+      let objectPromise = s3.putObject(params).promise();
+
+      objectPromise.then(data => {
+        console.log(data);
+      })
+    }
+  }
+
 };
