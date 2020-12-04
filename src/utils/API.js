@@ -18,13 +18,24 @@ export default {
     return axios.get('https://s3-us-west-2.amazonaws.com/css490/input.txt');
   },
 
-  clearData: function () {
+  clearData: async function () {
     let params = {
       TableName: 'Program4'
     }
 
     docClient.scan(params, onScan);
 
+    const myBucket = {
+      Bucket: 'css436prog4'
+    }
+    let myData = await s3.listObjects(myBucket).promise();
+    let myKeys = myData.Contents[0] !== undefined ? myData.Contents.map(content => content.Key) : [];
+
+    myKeys.map(key => s3.deleteObject({ Bucket: 'css436prog4', Key: key}, (err, data) => {
+        if (err) throw err;
+        console.log("Deleted from s3: ", data);
+      })
+    );
     function onScan(err, data) {
       if (err) {
         console.error(`Unable to scan the table. Error JSON: ${JSON.stringify(err, null, 2)}`);
