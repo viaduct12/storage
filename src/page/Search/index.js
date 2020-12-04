@@ -37,7 +37,7 @@ class SignUp extends React.Component {
                 });
             } else {
 
-                let apiData = await API.getData(this.state.firstName, this.state.lastName);
+                let apiData = await API.getData(this.state.firstName.trim(), this.state.lastName.trim());
                 if (apiData.length !== 0) {
                     this.setState({
                         'headers': ['fullName', 'firstName', 'lastName']
