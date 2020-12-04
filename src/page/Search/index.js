@@ -9,18 +9,15 @@ class SignUp extends React.Component {
     state = {
         firstName: "",
         lastName: "",
-        data: [],
         headers: ['fullName', 'firstName', 'lastName'],
         tableData: [],
         notFound: 'false',
         text: '',
-        dataLoaded: 'false',
-        prevData: []
+        dataLoaded: 'false'
     };
 
     handleChange = (event) => {
         const { name, value } = event.target;
-        // console.log(name, value)
         this.setState({ [name]: value });
     }
 
@@ -39,16 +36,15 @@ class SignUp extends React.Component {
                     'text': 'Please enter first name, last name, or both!'
                 });
             } else {
-            
+
                 let apiData = await API.getData(this.state.firstName, this.state.lastName);
                 if (apiData.length !== 0) {
                     this.setState({
                         'headers': ['fullName', 'firstName', 'lastName']
                     })
-
-                apiData.map(allData =>
-                    Object.keys(allData).map(keys => (!this.state.headers.includes(keys)) ? this.state.headers.push(keys) : '')
-                )
+                    apiData.map(allData =>
+                        Object.keys(allData).map(keys => (!this.state.headers.includes(keys)) ? this.state.headers.push(keys) : '')
+                    )
                 }
                 apiData.length === 0 ? this.setState({
                     'notFound': 'true',
@@ -75,7 +71,6 @@ class SignUp extends React.Component {
                 'firstName': '',
                 'lastName': ''
             })
-            // this.state.data.map(update => API.putData(update));
             let apiAllData = await API.getAllData();
 
             apiAllData.map(allData =>
@@ -84,18 +79,15 @@ class SignUp extends React.Component {
             this.setState({ 'tableData': apiAllData })
         }) : API.clearData();
 
-
         if (value === 'Clear')
             this.setState({
                 'tableData': [],
-                'dataLoaded': 'false',
-                'prevData': []
+                'dataLoaded': 'false'
             })
     }
 
     preparePayload = async datas => {
         API.checkFiles();
-        //good code
         datas.map(data => {
 
             let payload = {

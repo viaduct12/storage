@@ -1,13 +1,11 @@
 import axios from 'axios';
 const AWS = require('aws-sdk');
-//const fileStream = fs.createReadStream()
 
 AWS.config.update({
   accessKeyId: process.env.REACT_APP_AccessKeyId,
   secretAccessKey: process.env.REACT_APP_SecretAccessKey,
   region: process.env.REACT_APP_Region,
 })
-
 
 const s3 = new AWS.S3({
   apiVersion: '2006-03-01'
@@ -35,7 +33,6 @@ export default {
         console.log('Scan succedded.');
 
         data.Items.map(item => {
-          // console.log(item);
           const { lastName, firstName } = item;
           let params = {
             TableName: 'Program4',
@@ -65,7 +62,6 @@ export default {
       TableName: 'Program4',
       Item: data
     };
-    // console.log(params, 'params payload')
     docClient.put(params, (err, data) => {
       err ? console.error('Unable to add') : console.log('Added item successfully', JSON.stringify(data, null, 2));
     })
@@ -75,7 +71,6 @@ export default {
 
     first = first !== '' ? `${first[0].toUpperCase()}${first.substring(1)}` : '';
     last = last !== '' ? `${last[0].toUpperCase()}${last.substring(1)}` : '';
-    // console.log(`first ${first} last ${last}`)
     first = first.length === 2 ? first.toUpperCase() : first;
 
     if (first !== '' && last !== '') {
@@ -142,10 +137,8 @@ export default {
     inputContentSize = inputData.Contents[0] !== undefined ? inputData.Contents.map(content => content.Key === 'input.txt' ? content.Size : 0) : [];
 
     inputContentSize = inputContentSize.filter(size => size > 0);
-    console.log(myContentSize, 'my content size', inputContentSize, 'input content size');
-
     let boolSize = myContentSize.indexOf(inputContentSize[0]) === -1;
-    // true if -1
+
     if (boolSize) {
       console.log('file is being downloaded');
       let file = await s3.getObject({
@@ -153,24 +146,18 @@ export default {
         Key: 'input.txt'
       }, (err, data) => {
         if (err) throw err;
-        // console.log('file downloaded', data.Body)
         return data.Body
       }).promise();
-
-      // console.log( file.Body, 'the file');
 
       let params = {
         Bucket: 'css436prog4',
         Key: `input${myContentSize.length}.txt`,
         Body: file.Body
       };
-      // console.log('params payload', params);
       let objectPromise = s3.putObject(params).promise();
-
       objectPromise.then(data => {
         console.log(data);
       })
     }
   }
-
 };
