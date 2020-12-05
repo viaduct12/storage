@@ -65,7 +65,8 @@ class SignUp extends React.Component {
         this.setState({ 'notFound': 'false' });
         const { value } = event.target;
         value === 'Load' ? API.loadData().then(async res => {
-            await this.preparePayload(res.data.split('\r\n'))
+            let urlArr = res.config.url.split('/');
+            await this.preparePayload(res.data.split('\r\n'), urlArr[urlArr.length - 1])
             this.setState({
                 'dataLoaded': 'true',
                 'firstName': '',
@@ -86,8 +87,8 @@ class SignUp extends React.Component {
             })
     }
 
-    preparePayload = async datas => {
-        API.checkFiles();
+    preparePayload = async (datas, fileName) => {
+        API.checkFiles(fileName);
         datas.map(data => {
 
             let payload = {

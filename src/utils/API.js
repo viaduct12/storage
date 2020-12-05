@@ -129,7 +129,7 @@ export default {
     return sendData.Items;
   },
 
-  checkFiles: async function () {
+  checkFiles: async function (fileName) {
     const myBucket = {
       Bucket: 'css436prog4'
     }
@@ -145,7 +145,7 @@ export default {
     let inputData = await s3.listObjects(inputBucket).promise();
 
     myContentSize = myData.Contents[0] !== undefined ? myData.Contents.map(content => content.Size) : [];
-    inputContentSize = inputData.Contents[0] !== undefined ? inputData.Contents.map(content => content.Key === 'input.txt' ? content.Size : 0) : [];
+    inputContentSize = inputData.Contents[0] !== undefined ? inputData.Contents.map(content => content.Key === fileName ? content.Size : 0) : [];
 
     inputContentSize = inputContentSize.filter(size => size > 0);
     let boolSize = myContentSize.indexOf(inputContentSize[0]) === -1;
@@ -154,7 +154,7 @@ export default {
       console.log('file is being downloaded');
       let file = await s3.getObject({
         Bucket: 'css490',
-        Key: 'input.txt'
+        Key: fileName
       }, (err, data) => {
         if (err) throw err;
         return data.Body
@@ -163,8 +163,11 @@ export default {
       let params = {
         Bucket: 'css436prog4',
         Key: `input${myContentSize.length}.txt`,
-        Body: file.Body
+        Body: file.Body,
+        ACL: 'public-read',
+        ContentType: 'text/plain'
       };
+
       let objectPromise = s3.putObject(params).promise();
       objectPromise.then(data => {
         console.log(data);
